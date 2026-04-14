@@ -16,8 +16,25 @@ Day 11 — Guardrails, HITL & Responsible AI: How to make agent applications saf
 ```
 Day-11-Guardrails-HITL-Responsible-AI/
 ├── notebooks/
-│   ├── lab11_guardrails_hitl.ipynb            # Student lab
+│   ├── lab11_guardrails_hitl.ipynb            # Student lab (Colab)
 │   └── lab11_guardrails_hitl_solution.ipynb   # Solution (instructor only)
+├── src/                                       # Local Python version
+│   ├── main.py                    # Entry point — run all parts or pick one
+│   ├── core/
+│   │   ├── config.py              # API key setup, allowed/blocked topics
+│   │   └── utils.py               # chat_with_agent() helper
+│   ├── agents/
+│   │   └── agent.py               # Unsafe & protected agent creation
+│   ├── attacks/
+│   │   └── attacks.py             # TODO 1-2: Adversarial prompts & AI red teaming
+│   ├── guardrails/
+│   │   ├── input_guardrails.py    # TODO 3-5: Injection detection, topic filter, plugin
+│   │   ├── output_guardrails.py   # TODO 6-8: Content filter, LLM-as-Judge, plugin
+│   │   └── nemo_guardrails.py     # TODO 9: NeMo Guardrails with Colang
+│   ├── testing/
+│   │   └── testing.py             # TODO 10-11: Before/after comparison, pipeline
+│   └── hitl/
+│       └── hitl.py                # TODO 12-13: Confidence router, HITL design
 ├── requirements.txt
 └── README.md
 ```
@@ -31,12 +48,35 @@ Day-11-Guardrails-HITL-Responsible-AI/
 3. Save the API key in Colab Secrets as `GOOGLE_API_KEY`
 4. Run cells in order
 
-### Local
+### Local (Notebook)
 
 ```bash
 pip install -r requirements.txt
 export GOOGLE_API_KEY="your-api-key-here"
 jupyter notebook notebooks/lab11_guardrails_hitl.ipynb
+```
+
+### Local (Python modules — no Colab needed)
+
+```bash
+cd src/
+pip install -r ../requirements.txt
+export GOOGLE_API_KEY="your-api-key-here"
+
+# Run the full lab
+python main.py
+
+# Or run specific parts
+python main.py --part 1    # Part 1: Attacks
+python main.py --part 2    # Part 2: Guardrails
+python main.py --part 3    # Part 3: Testing pipeline
+python main.py --part 4    # Part 4: HITL design
+
+# Or test individual modules
+python guardrails/input_guardrails.py
+python guardrails/output_guardrails.py
+python testing/testing.py
+python hitl/hitl.py
 ```
 
 ### Tools Used
@@ -84,5 +124,8 @@ jupyter notebook notebooks/lab11_guardrails_hitl.ipynb
 - [OWASP Top 10 for LLM](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
 - [NeMo Guardrails](https://github.com/NVIDIA/NeMo-Guardrails)
 - [Google ADK Documentation](https://google.github.io/adk-docs/)
+- [Official Google's Gemini cookbook](https://github.com/google-gemini/cookbook/blob/main/examples/gemini_google_adk_model_guardrails.ipynb)
 - [AI Safety Fundamentals](https://aisafetyfundamentals.com/)
+- [AI Red Teaming Guide](https://github.com/requie/AI-Red-Teaming-Guide)
 - [antoan.ai - AI Safety Vietnam](https://antoan.ai)
+
