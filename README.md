@@ -83,7 +83,7 @@ python hitl/hitl.py
 
 - **Google ADK** — Agent Development Kit (plugins, runners)
 - **NeMo Guardrails** — NVIDIA framework with Colang (declarative safety rules)
-- **Gemini 2.0 Flash** — LLM backend
+- **Gemini 2.5 Flash/Flash Lite** — LLM backend (you can switch to other models if you want)
 
 ## Lab Structure (2.5 hours)
 

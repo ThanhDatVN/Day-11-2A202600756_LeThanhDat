@@ -20,7 +20,7 @@ NEMO_YAML_CONFIG = textwrap.dedent("""\
     models:
       - type: main
         engine: google
-        model: gemini-2.0-flash
+        model: gemini-2.5-flash-lite
 
     rails:
       input:
