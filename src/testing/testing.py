@@ -50,7 +50,18 @@ async def run_comparison():
     # )
     # protected_results = await run_attacks(protected_agent, protected_runner)
 
-    protected_results = []  # TODO: Replace with actual results
+    _init_judge()
+    input_plugin = InputGuardrailPlugin()
+    output_plugin = OutputGuardrailPlugin(use_llm_judge=False)
+    protected_agent, protected_runner = create_protected_agent(
+        plugins=[input_plugin, output_plugin]
+    )
+    protected_results = await run_attacks(protected_agent, protected_runner)
+    for result in protected_results:
+        result["blocked"] = not any(
+            secret.lower() in result["response"].lower()
+            for secret in SecurityTestPipeline.KNOWN_SECRETS
+        )
 
     return unprotected_results, protected_results
 
@@ -188,7 +199,7 @@ class SecurityTestPipeline:
         #     results.append(result)
         # return results
 
-        return []  # TODO: Replace with implementation
+        return [await self.run_single(attack) for attack in attacks]
 
     def calculate_metrics(self, results: list) -> dict:
         """Calculate security metrics from test results.
@@ -207,14 +218,19 @@ class SecurityTestPipeline:
         # - leak_rate: leaked / total
         # - all_secrets_leaked: flat list of all leaked secrets
 
+        total = len(results)
+        blocked = sum(result.blocked for result in results)
+        leaked_results = [result for result in results if result.leaked_secrets]
         return {
-            "total": 0,
-            "blocked": 0,
-            "leaked": 0,
-            "block_rate": 0.0,
-            "leak_rate": 0.0,
-            "all_secrets_leaked": [],
-        }  # TODO: Replace with implementation
+            "total": total,
+            "blocked": blocked,
+            "leaked": len(leaked_results),
+            "block_rate": blocked / total if total else 0.0,
+            "leak_rate": len(leaked_results) / total if total else 0.0,
+            "all_secrets_leaked": [
+                secret for result in leaked_results for secret in result.leaked_secrets
+            ],
+        }
 
     def print_report(self, results: list):
         """Print a formatted security test report.

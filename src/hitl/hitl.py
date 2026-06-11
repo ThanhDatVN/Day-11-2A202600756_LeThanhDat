@@ -84,13 +84,15 @@ class ConfidenceRouter:
         #      action="escalate", priority="high",
         #      requires_human=True, reason="Low confidence — escalating"
 
-        return RoutingDecision(
-            action="auto_send",
-            confidence=confidence,
-            reason="TODO: implement routing logic",
-            priority="low",
-            requires_human=False,
-        )  # TODO: Replace with implementation
+        if not 0.0 <= confidence <= 1.0:
+            raise ValueError("confidence must be between 0.0 and 1.0")
+        if action_type in HIGH_RISK_ACTIONS:
+            return RoutingDecision("escalate", confidence, f"High-risk action: {action_type}", "high", True)
+        if confidence >= self.HIGH_THRESHOLD:
+            return RoutingDecision("auto_send", confidence, "High confidence", "low", False)
+        if confidence >= self.MEDIUM_THRESHOLD:
+            return RoutingDecision("queue_review", confidence, "Medium confidence - needs review", "normal", True)
+        return RoutingDecision("escalate", confidence, "Low confidence - escalating", "high", True)
 
 
 # ============================================================
@@ -109,27 +111,27 @@ class ConfidenceRouter:
 hitl_decision_points = [
     {
         "id": 1,
-        "name": "TODO: Name this decision point",
-        "trigger": "TODO: When does this trigger?",
-        "hitl_model": "TODO: human-in-the-loop / human-on-the-loop / human-as-tiebreaker",
-        "context_needed": "TODO: What does the reviewer need to see?",
-        "example": "TODO: Give a concrete example scenario",
+        "name": "High-value transfer approval",
+        "trigger": "Transfer exceeds 50,000,000 VND or is sent to a new beneficiary",
+        "hitl_model": "human-in-the-loop",
+        "context_needed": "Customer verification, balance, beneficiary, fraud score, and recent transactions",
+        "example": "A customer requests a 200,000,000 VND transfer to a newly added account",
     },
     {
         "id": 2,
-        "name": "TODO: Name this decision point",
-        "trigger": "TODO: When does this trigger?",
-        "hitl_model": "TODO: human-in-the-loop / human-on-the-loop / human-as-tiebreaker",
-        "context_needed": "TODO: What does the reviewer need to see?",
-        "example": "TODO: Give a concrete example scenario",
+        "name": "Ambiguous financial guidance",
+        "trigger": "Agent confidence is between 0.7 and 0.9 or judge criteria disagree",
+        "hitl_model": "human-as-tiebreaker",
+        "context_needed": "Question, drafted answer, cited policy, confidence, and judge scores",
+        "example": "The agent is unsure whether a promotional interest rate applies to this customer",
     },
     {
         "id": 3,
-        "name": "TODO: Name this decision point",
-        "trigger": "TODO: When does this trigger?",
-        "hitl_model": "TODO: human-in-the-loop / human-on-the-loop / human-as-tiebreaker",
-        "context_needed": "TODO: What does the reviewer need to see?",
-        "example": "TODO: Give a concrete example scenario",
+        "name": "Suspected account takeover",
+        "trigger": "Repeated injection attempts, failed verification, or unusual session behavior",
+        "hitl_model": "human-on-the-loop",
+        "context_needed": "Audit trail, device and location signals, failed checks, and affected account",
+        "example": "A session asks for credentials after several failed identity checks",
     },
 ]
 

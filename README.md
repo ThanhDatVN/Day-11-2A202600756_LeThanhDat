@@ -101,6 +101,19 @@ python hitl/hitl.py
 1. **Security Report**: Before/after comparison of 5+ attacks (ADK + NeMo)
 2. **HITL Flowchart**: 3 decision points with escalation paths
 
+## Assignment 11 Defense Pipeline
+
+The completed standalone pipeline is in `src/defense_pipeline.py`. It includes rate limiting, input
+guardrails, output redaction, a multi-criteria judge, audit JSON, monitoring alerts, and all four
+required test suites.
+
+```bash
+python src/defense_pipeline.py
+```
+
+The individual analysis is in `REPORT.md`, and the HITL design is in `HITL_FLOWCHART.md`. Running
+the pipeline exports `security_audit.json`.
+
 ## 13 TODOs
 
 | # | Description | Framework |
